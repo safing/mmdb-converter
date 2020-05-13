@@ -22,7 +22,12 @@ say("converting " . $inputFile . " into " . $outputFile);
 
 my $iprange;
 my $country;
-my $isp;
+my $continent;
+my $countryID;
+my $latitude;
+my $longitude;
+my $inEU;
+my $aso;
 my $asn;
 
 if (not $inputFile) {
@@ -42,16 +47,32 @@ if ($ipver == '6') {
   $ip_version = 6;
 }
 
-$blocks_csv->bind_columns( \$iprange, \$asn, \$country, \$isp);
+$blocks_csv->bind_columns(
+  \$iprange,
+  \$country,
+  \$continent,
+  \$countryID,
+  \$latitude,
+  \$longitude,
+  \$inEU,
+  \$asn,
+  \$aso );
 
 # Our top level data structure will always be a map (hash).  The MMDB format
 # is strongly typed. Describe your data types here.
 # See https://metacpan.org/pod/MaxMind::DB::Writer::Tree#DATA-TYPES
 
 my %types = (
-    asn      => 'uint32',
-    isp      => 'utf8_string',
-    country  => 'utf8_string',
+    continent => 'map',
+    'code' => 'utf8_string',
+    country => 'map',
+    'iso_code' => 'utf8_string',
+    inEU => 'boolean',
+    coordinates => 'map',
+    latitude => 'float',
+    longitude => 'float',
+    autonomous_system_number => 'uint32',
+    autonomous_system_organization => 'utf8_string'
 );
 
 my $tree = MaxMind::DB::Writer::Tree->new(
@@ -71,19 +92,30 @@ my $tree = MaxMind::DB::Writer::Tree->new(
     map_key_type_callback => sub { $types{ $_[0] } },
 
     # "record_size" is the record size in bits.  Either 24, 28 or 32.
-    record_size => 24, # 32, #24,
+    record_size => 32, # 32, #24,
+    merge_strategy => "recurse"
 );
 
 while ($blocks_csv->getline( $fh ) ) {
   my $network = Net::Works::Network->new_from_string(
     string => $iprange,
   );
+
   $tree->insert_network( $network, {
-    asn => $asn,
-    isp => $isp,
-    country => $country,
+    continent => {
+      'code' => $continent,
+    },
+    country => {
+      'iso_code' => $country,
+      inEU => $inEU,
+    },
+    coordinates => {
+      latitude => $latitude,
+      longitude => $longitude,
+    },
+    autonomous_system_number => $asn,
+    autonomous_system_organization => $aso,
   });
-  say($iprange);
 }
 
 # Checking for End-of-file 
