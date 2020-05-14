@@ -68,7 +68,7 @@ my %types = (
     country => 'map',
     'iso_code' => 'utf8_string',
     inEU => 'boolean',
-    coordinates => 'map',
+    location => 'map',
     latitude => 'float',
     longitude => 'float',
     autonomous_system_number => 'uint32',
@@ -109,7 +109,7 @@ while ($blocks_csv->getline( $fh ) ) {
       'iso_code' => $country,
       inEU => $inEU,
     },
-    coordinates => {
+    location => {
       latitude => $latitude,
       longitude => $longitude,
     },
