@@ -22,11 +22,11 @@ say("converting " . $inputFile . " into " . $outputFile);
 
 my $iprange;
 my $country;
-my $continent;
+# my $continent;
 my $countryID;
 my $latitude;
 my $longitude;
-my $inEU;
+# my $inEU;
 my $aso;
 my $asn;
 my $isAnycast;
@@ -53,11 +53,11 @@ if ($ipver == '6') {
 $blocks_csv->bind_columns(
   \$iprange,
   \$country,
-  \$continent,
-  \$countryID,
+#  \$continent,
+#  \$countryID,
   \$latitude,
   \$longitude,
-  \$inEU,
+#  \$inEU,
   \$asn,
   \$aso,
   \$isAnycast,
@@ -69,11 +69,11 @@ $blocks_csv->bind_columns(
 # See https://metacpan.org/pod/MaxMind::DB::Writer::Tree#DATA-TYPES
 
 my %types = (
-    continent => 'map',
-    'code' => 'utf8_string',
+    # continent => 'map',
+    # 'code' => 'utf8_string',
     country => 'map',
     'iso_code' => 'utf8_string',
-    inEU => 'boolean',
+    # inEU => 'boolean',
     location => 'map',
     latitude => 'float',
     longitude => 'float',
@@ -111,12 +111,12 @@ while ($blocks_csv->getline( $fh ) ) {
   );
 
   $tree->insert_network( $network, {
-    continent => {
-      'code' => $continent,
-    },
+    # continent => {
+    #   'code' => $continent,
+    # },
     country => {
       'iso_code' => $country,
-      inEU => $inEU,
+      # inEU => $inEU,
     },
     location => {
       latitude => $latitude,
