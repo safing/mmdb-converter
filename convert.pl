@@ -29,6 +29,9 @@ my $longitude;
 my $inEU;
 my $aso;
 my $asn;
+my $isAnycast;
+my $isSatelliteProvider;
+my $isAnonymousProxy;
 
 if (not $inputFile) {
   die("Missing input file");
@@ -56,7 +59,10 @@ $blocks_csv->bind_columns(
   \$longitude,
   \$inEU,
   \$asn,
-  \$aso );
+  \$aso,
+  \$isAnycast,
+  \$isSatelliteProvider,
+  \$isAnonymousProxy );
 
 # Our top level data structure will always be a map (hash).  The MMDB format
 # is strongly typed. Describe your data types here.
@@ -72,7 +78,10 @@ my %types = (
     latitude => 'float',
     longitude => 'float',
     autonomous_system_number => 'uint32',
-    autonomous_system_organization => 'utf8_string'
+    autonomous_system_organization => 'utf8_string',
+    is_anycast => 'boolean',
+    is_satellite_provider => 'boolean',
+    is_anonymous_proxy => 'boolean'
 );
 
 my $tree = MaxMind::DB::Writer::Tree->new(
@@ -115,6 +124,9 @@ while ($blocks_csv->getline( $fh ) ) {
     },
     autonomous_system_number => $asn,
     autonomous_system_organization => $aso,
+    is_anycast => $isAnycast,
+    is_satellite_provider => $isSatelliteProvider,
+    is_anonymous_proxy => $isAnonymousProxy,
   });
 }
 
