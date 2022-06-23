@@ -1,5 +1,9 @@
 #!/usr/bin/env perl
 
+# Maxmind DB Docs:
+# https://maxmind.github.io/MaxMind-DB/
+# https://metacpan.org/pod/MaxMind::DB::Writer::Tree#DATA-TYPES
+
 use strict;
 use warnings;
 use feature qw( say );
@@ -101,7 +105,13 @@ my $tree = MaxMind::DB::Writer::Tree->new(
     map_key_type_callback => sub { $types{ $_[0] } },
 
     # "record_size" is the record size in bits.  Either 24, 28 or 32.
-    record_size => 32, # 32, #24,
+    # This is the max size of the pointer that should be able to point anywhere in the resulting file.
+    # Max supported file sizes:
+    # 24: 16.7MB
+    # 28: 268MB
+    # 32: 4.2GB
+    record_size => 28,
+
     merge_strategy => "recurse"
 );
 
